@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>YT Remote</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:        #D4AF37;
+      --gold-bright: #F2D060;
+      --gold-border: rgba(212, 175, 55, 0.22);
+      --gold-fill:   rgba(212, 175, 55, 0.08);
+      --bg-base:     #09091a;
+      --text:        #E0E0EE;
+      --text-muted:  #48486a;
+      --red-bg:      rgba(190, 45, 45, 0.09);
+      --red-border:  rgba(200, 50, 50, 0.42);
+      --red-text:    #E05555;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background:
+        radial-gradient(ellipse at 50% -20%, rgba(212,175,55,0.11) 0%, transparent 52%),
+        radial-gradient(ellipse at 15% 90%,  rgba(80, 40,180,0.05) 0%, transparent 45%),
+        linear-gradient(180deg, #0d0d24 0%, #080812 100%);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    /* ── Top shimmer edge ── */
+    .crown-bar {
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212,175,55,0.18) 18%,
+        var(--gold) 38%,
+        var(--gold-bright) 50%,
+        var(--gold) 62%,
+        rgba(212,175,55,0.18) 82%,
+        transparent 100%
+      );
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 15px 18px 14px;
+    }
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--gold-border);
+      box-shadow:
+        0 0 18px rgba(212,175,55,0.25),
+        0 3px 10px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+    }
+    .header-copy h1 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      letter-spacing: 0.6px;
+      text-shadow: 0 0 28px rgba(212,175,55,0.5);
+    }
+    .header-copy p {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* ── Gold divider ── */
+    .rule {
+      height: 1px;
+      margin: 0 18px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--gold-border) 28%,
+        rgba(212,175,55,0.4) 50%,
+        var(--gold-border) 72%,
+        transparent 100%
+      );
+    }
+
+    /* ── Status cards ── */
+    .status {
+      display: flex;
+      gap: 10px;
+      padding: 14px 18px;
+    }
+    .card {
+      flex: 1;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--gold-border);
+      border-radius: 12px;
+      padding: 9px 10px 11px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* inner top-highlight */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: rgba(212,175,55,0.5);
+    }
+    .card .c-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2.2px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .card .c-val {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.28s, text-shadow 0.28s;
+    }
+    .card .c-val.changed {
+      color: var(--gold-bright);
+      text-shadow: 0 0 20px rgba(212,175,55,0.55);
+    }
+
+    /* ── Section ── */
+    .section { padding: 11px 18px 8px; }
+
+    .sec-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--gold);
+      opacity: 0.62;
+      margin-bottom: 10px;
+    }
+    .sec-title::before,
+    .sec-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+    }
+    .sec-title::before {
+      background: linear-gradient(to right, transparent, rgba(212,175,55,0.4));
+    }
+    .sec-title::after {
+      background: linear-gradient(to left,  transparent, rgba(212,175,55,0.4));
+    }
+
+    /* ── Control buttons ── */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 13px 8px 11px;
+      background: var(--gold-fill);
+      border: 1px solid var(--gold-border);
+      border-radius: 14px;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      transition:
+        background 0.17s,
+        border-color 0.17s,
+        box-shadow 0.17s,
+        transform 0.10s;
+    }
+    .ctrl-btn:hover {
+      background: rgba(212,175,55,0.13);
+      border-color: rgba(212,175,55,0.55);
+      box-shadow:
+        0 0 22px rgba(212,175,55,0.18),
+        inset 0 1px 0 rgba(212,175,55,0.15);
+      transform: translateY(-1px);
+    }
+    .ctrl-btn:active {
+      transform: scale(0.93);
+      box-shadow: none;
+      background: rgba(212,175,55,0.08);
+    }
+
+    .ctrl-btn .b-icon { font-size: 22px; line-height: 1; }
+    .ctrl-btn .b-lbl  {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #a0a0c0;
+    }
+    /* Physical key badge */
+    .ctrl-btn .b-key {
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 10px;
+      background: rgba(212,175,55,0.07);
+      border: 1px solid rgba(212,175,55,0.30);
+      border-bottom: 2.5px solid rgba(212,175,55,0.48);
+      border-radius: 5px;
+      padding: 1px 10px 0;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Reset button ── */
+    .reset-wrap { padding: 5px 18px 13px; }
+    .reset-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px;
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      border-radius: 14px;
+      color: var(--red-text);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.17s, border-color 0.17s, box-shadow 0.17s, transform 0.10s;
+    }
+    .reset-btn:hover {
+      background: rgba(200,50,50,0.17);
+      border-color: rgba(220,55,55,0.72);
+      box-shadow: 0 0 20px rgba(200,50,50,0.20);
+    }
+    .reset-btn:active { transform: scale(0.96); }
+    .reset-btn .r-spin { font-size: 15px; }
+
+    /* ── Shortcuts ── */
+    .shortcuts {
+      padding: 10px 18px 15px;
+      border-top: 1px solid rgba(212,175,55,0.07);
+      background: rgba(0,0,0,0.22);
+    }
+    .sc-title {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2.2px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 9px;
+      opacity: 0.65;
+    }
+    .sc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 6px;
+    }
+    .sc-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10.5px;
+      color: #3e3e62;
+    }
+    kbd {
+      background: rgba(212,175,55,0.07);
+      border: 1px solid rgba(212,175,55,0.22);
+      border-bottom: 2px solid rgba(212,175,55,0.38);
+      border-radius: 4px;
+      padding: 1px 7px 0;
+      font-size: 10px;
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      color: var(--gold);
+      min-width: 22px;
+      text-align: center;
+    }
+
+    /* ── Bottom shimmer ── */
+    .bottom-bar {
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(212,175,55,0.07) 25%,
+        rgba(212,175,55,0.28) 50%,
+        rgba(212,175,55,0.07) 75%,
+        transparent 100%
+      );
+    }
+
+    /* ── Not-on-YouTube state ── */
+    .not-yt {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 42px 24px 38px;
+      gap: 12px;
+      text-align: center;
+    }
+    .nyt-icon { font-size: 44px; opacity: 0.20; }
+    .nyt-msg  { font-size: 12.5px; color: #5a5a90; line-height: 1.7; }
+    .nyt-hint {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      opacity: 0.55;
+    }
+
+    body.no-yt .controls { display: none; }
+    body.no-yt .not-yt   { display: flex; }
+  </style>
+</head>
+<body>
+
+  <div class="crown-bar"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="header-icon" src="icons/icon48.png" alt="">
+    <div class="header-copy">
+      <h1>Speed &amp; Volume</h1>
+      <p>Remote Control</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+
+    <!-- Live status -->
+    <div class="status">
+      <div class="card">
+        <div class="c-label">Speed</div>
+        <div class="c-val" id="speed-val">1.00×</div>
+      </div>
+      <div class="card">
+        <div class="c-label">Volume</div>
+        <div class="c-val" id="vol-val">100%</div>
+      </div>
+    </div>
+
+    <!-- Speed -->
+    <div class="section">
+      <div class="sec-title">Speed Control</div>
+      <div class="btn-row">
+        <button class="ctrl-btn" id="btn-slow">
+          <span class="b-icon">🐢</span>
+          <span class="b-lbl">Slow Down</span>
+          <span class="b-key">S</span>
+        </button>
+        <button class="ctrl-btn" id="btn-fast">
+          <span class="b-icon">⚡</span>
+          <span class="b-lbl">Speed Up</span>
+          <span class="b-key">D</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="section">
+      <div class="sec-title">Volume Control</div>
+      <div class="btn-row">
+        <button class="ctrl-btn" id="btn-vol-down">
+          <span class="b-icon">🔉</span>
+          <span class="b-lbl">Vol Down</span>
+          <span class="b-key">A</span>
+        </button>
+        <button class="ctrl-btn" id="btn-vol-up">
+          <span class="b-icon">🔊</span>
+          <span class="b-lbl">Vol Up</span>
+          <span class="b-key">W</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div class="reset-wrap">
+      <button class="reset-btn" id="btn-reset">
+        <span class="r-spin">↺</span>
+        <span>Reset to Default</span>
+      </button>
+    </div>
+
+    <!-- Keyboard reference -->
+    <div class="shortcuts">
+      <div class="sc-title">Keyboard Shortcuts</div>
+      <div class="sc-grid">
+        <div class="sc-row"><kbd>S</kbd> Slow Down</div>
+        <div class="sc-row"><kbd>D</kbd> Speed Up</div>
+        <div class="sc-row"><kbd>A</kbd> Vol Down</div>
+        <div class="sc-row"><kbd>W</kbd> Vol Up</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Not on YouTube -->
+  <div class="not-yt">
+    <div class="nyt-icon">▶</div>
+    <div class="nyt-msg">Open a YouTube video<br>to use the remote</div>
+    <div class="nyt-hint">Navigate to youtube.com</div>
+  </div>
+
+  <div class="bottom-bar"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
