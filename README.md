@@ -39,7 +39,7 @@
 
 1. Download or clone this repository
    ```bash
-   git clone https://github.com/YOUR_USERNAME/youtube-speed-control.git
+   git clone https://github.com/DrustO9/youtube-speed-control.git
    ```
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode** (toggle, top-right)
